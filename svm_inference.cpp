@@ -21,16 +21,16 @@ svm_inference::svm_inference(const char *basepath)
       strcat(file_path, ptr->d_name);
       file_name = string(ptr->d_name);
       file_name = file_name.substr(0, file_name.rfind(".")); 
-      ninjutsu_models[file_name] = svm_load_model(file_path);
+      ninjutsu_model[file_name] = svm_load_model(file_path);
     }
   }
 }
 
 svm_inference::~svm_inference()
 {
-  for(unordered_map<string, svm_model *>::iterator iter = ninjutsu_models.begin();iter != ninjutsu_models.end();iter++)
+  for(auto model:ninjutsu_model)
   {
-    svm_free_and_destroy_model(&iter->second);
+    svm_free_and_destroy_model(&(model.second));
   }
 }
 
@@ -55,10 +55,10 @@ string svm_inference::do_svm_inference()
   string res = "";
 
   double predict_label;
-  for(unordered_map<string, svm_model *>::iterator iter = ninjutsu_models.begin();iter != ninjutsu_models.end();iter++)
+  for(auto model:ninjutsu_model)
   {
-    predict_label = svm_predict(iter->second,x_space);
-    if(predict_label > 0) res = iter->first;
+    predict_label = svm_predict(model.second,x_space);
+    if(predict_label > 0) res = model.first;
   }
   cout << "gesture: " << res << endl;
 

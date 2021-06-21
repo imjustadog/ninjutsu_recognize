@@ -18,7 +18,7 @@ class svm_inference
 {
   private:
     struct svm_node *x_space;
-    unordered_map<string, svm_model *> ninjutsu_models;
+    unordered_map<string, svm_model *> ninjutsu_model;
   public:
     svm_inference(const char *basepath);
     ~svm_inference();
