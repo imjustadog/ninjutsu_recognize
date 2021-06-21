@@ -17,6 +17,7 @@
 
 #include "svm_inference.hpp"
 #include "seq_compare.hpp"
+//#include "after_effect.hpp"
 
 using namespace std;
 using namespace cv;
@@ -65,6 +66,11 @@ int main(int argc,char *argv[])
   const char *function_name="subnet0";
   CNRT_CHECK(cnrtCreateFunction(&function));
   CNRT_CHECK(cnrtExtractFunction(&function, model, function_name));
+
+  //assign specified channel is needeed
+  int dev_channel=-1;
+  if(dev_channel>=0)
+    CNRT_CHECK(cnrtSetCurrentChannel((cnrtChannelType_t)dev_channel));
 
   // get model input/output data size
   int64_t *inputSizeS, *outputSizeS;
@@ -165,8 +171,10 @@ int main(int argc,char *argv[])
   CNRT_CHECK(cnrtRuntimeContextCreateQueue(ctx,&queue));
 
   //set invoke param
+  unsigned int affinity=1<<dev_channel;
   cnrtInvokeParam_t invokeParam;
   invokeParam.invoke_param_type=CNRT_INVOKE_PARAM_TYPE_0;
+  invokeParam.cluster_affinity.affinity=&affinity;
 
   //create notifier 
   cnrtNotifier_t notifier_start;
