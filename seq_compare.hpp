@@ -2,7 +2,7 @@
 #define _SEQ_COMPARE_H
 
 #include <iostream>
-#include <vector>
+#include <unordered_map>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -15,7 +15,7 @@ using namespace std;
 class seq_compare
 {
   private:
-    vector<string> seq_list{"r60", "24bgiokr2", "q9qzqn3q", "w"};
+    unordered_map<string, int> seq_map{{"r60", 0}, {"24bgiokr2", 0}, {"q9qzqn3q", 0}, {"w", 0}};
     string current_seq = "";
   public:
     seq_compare();

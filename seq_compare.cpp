@@ -18,17 +18,17 @@ string seq_compare::find_seq(string current_gesture)
   else
   {
     current_seq += current_gesture;
-    for(auto str:seq_list)
+    for(auto seq:seq_map)
     {
-      i = str.size() - 1;
+      i = seq.first.size() - 1;
       for(j = current_seq.size() - 1;(i >= 0) && (j >= 0);j--)
       {
-        if(str[i] == current_seq[j]) i--;
+        if((seq.first)[i] == current_seq[j]) i--;
       }
       if(i < 0)
       {
         current_seq = "";
-        res = str;
+        res = seq.first;
         break;
       }
     }
