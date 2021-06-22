@@ -269,11 +269,12 @@ int main(int argc,char *argv[])
     {
       cv::Mat probMap(output_height, output_width, CV_32F, temp);
       temp += output_height * output_width;
-      cv::resize(probMap, probMap, cv::Size(image_width, image_height));
+      //cv::resize(probMap, probMap, cv::Size(input_width, input_height));
 
       Point maxLoc;
       cv::minMaxLoc(probMap, 0, &prob, 0, &maxLoc);
-      points[n] = maxLoc;
+      points[n].x = maxLoc.x * (image_width / output_width) + 4;
+      points[n].y = maxLoc.y * (image_height / output_height) + 4;
     }    
 
     cv::Mat output_image;
@@ -294,7 +295,6 @@ int main(int argc,char *argv[])
       cv::circle(output_image, partA, 4, cv::Scalar(0,0,255), -1);
       cv::circle(output_image, partB, 4, cv::Scalar(0,0,255), -1);
     }
-
 
 
     string svm_result;
@@ -330,7 +330,7 @@ int main(int argc,char *argv[])
     //get time end
     auto t1=GetTickCount();
 
-    //printf("HardwareTime:%f(ms) E2ETime:%f(ms)\n",hwtime/1000.0,t1-t0);
+    printf("HardwareTime:%f(ms) E2ETime:%f(ms)\n",hwtime/1000.0,t1-t0);
 
     cv::imshow("show", output_image);
     ch = cv::waitKey(1);
