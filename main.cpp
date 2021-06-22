@@ -16,8 +16,7 @@
 #include <iostream>
 
 #include "svm_inference.hpp"
-#include "seq_compare.hpp"
-//#include "after_effect.hpp"
+#include "effect_overlay.hpp"
 
 using namespace std;
 using namespace cv;
@@ -190,8 +189,7 @@ int main(int argc,char *argv[])
   
   const char *svm_model_path = "./model/";
   svm_inference svm_ninjutsu(svm_model_path);
-  seq_compare seq_ninjutsu;
-  //after_effect ae_ninjutsu;
+  effect_overlay effect_ninjutsu;
 
   int input_idx=0;
   int output_idx=0;
@@ -323,9 +321,8 @@ int main(int argc,char *argv[])
     svm_ninjutsu.do_svm_postprocess();
 
     string seq_result;
-    seq_result = seq_ninjutsu.find_seq(svm_result);
-    //(*(ae_ninjutsu.ae_map[seq_result]))(output_image, 1);
-    //(*(ae_ninjutsu.ae_map[seq_result]))(output_image, 0);
+    seq_result = effect_ninjutsu.find_seq(svm_result);
+    effect_ninjutsu.add_effect(seq_result, output_image, 0);
 
     //get time end
     auto t1=GetTickCount();
