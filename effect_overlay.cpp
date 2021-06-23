@@ -1,5 +1,14 @@
 #include "effect_overlay.hpp"
 
+const int WATER_RMAX = 10;
+const int WATER_RMIN = 5;
+const int WATER_COUNT = 30;
+const int CHANGE_INTERVAL = 4;
+const int SEED = 666;
+const int TIME_TRANS = 40;
+const int TIME_MOVE = 60;
+const int TIME_STOP = 100;
+
 effect_overlay::effect_overlay()
 {
 }
@@ -8,17 +17,8 @@ effect_overlay::~effect_overlay()
 {
 }
 
-int effect_overlay::draw_water(cv::Mat frame, int flag_restart)
+int effect_overlay::draw_water(cv::Mat frame, cv::Point hand_center, int flag_restart)
 {
-  const int WATER_RMAX = 10;
-  const int WATER_RMIN = 5;
-  const int WATER_COUNT = 30;
-  const int CHANGE_INTERVAL = 5;
-  const int SEED = 666;
-  const int TIME_TRANS = 100;
-  const int TIME_MOVE = 150;
-  const int TIME_STOP = 200;
-
   static vector<vector<int>> water_kernel(WATER_COUNT + 1, vector<int>(3, 0));
   static int current_time = 0;
   default_random_engine dre(SEED);
@@ -85,31 +85,76 @@ int effect_overlay::draw_water(cv::Mat frame, int flag_restart)
   return 0;
 }
 
-int effect_overlay::draw_lightning(cv::Mat frame, int flag_restart)
+int effect_overlay::draw_lightning(cv::Mat frame, cv::Point hand_center, int flag_restart)
 {
-    static int current_time = 0;
-    static cv::Mat lightning_core = cv::imread("light.png");
-    static cv::Mat lightning_spark = cv::imread("spark.png");
-    cv::Mat roi_core;
-    cv::Mat roi_spark;
-	
+  static int current_time = 0;
+  static cv::Mat lightning_spark = cv::imread("spark.png");
+  cv::Mat roi_spark;
+  cv::Point spark_coord;
+  int xmin = 0;
+  int xmax = lightning_spark.cols;
+  int ymin = 0;
+  int ymax = lightning_spark.rows;
+
+  if(flag_restart)
+  {
+    current_time = 0;
+  }
+
+  spark_coord.x = hand_center.x - lightning_spark.cols / 2;
+  spark_coord.y = hand_center.y - lightning_spark.rows / 2;
+
+  if(spark_coord.x < 0)
+  {
+    xmin = 0 - spark_coord.x;
+    spark_coord.x = 0;
+  }
+  if(spark_coord.x > frame.cols - lightning_spark.cols)
+  {
+    xmax = lightning_spark.cols - (frame.cols - spark_coord.x);
+    spark_coord.x = frame.cols - lightning_spark.cols;
+  }
+  if(spark_coord.y < 0)
+  {
+    ymin = 0 - spark_coord.y;
+    spark_coord.y = 0;
+  }
+  if(spark_coord.y > frame.rows - lightning_spark.rows)
+  {
+    ymax = lightning_spark.rows - (frame.rows - spark_coord.y);
+    spark_coord.y = frame.rows - lightning_spark.rows;
+  }
+
+  //cout << " xmin: " << xmin << " ymin: " << ymin << " xmax: " << xmax << " ymax: " << ymax << endl;
+  //cout << " x: " << spark_coord.x << " y: " << spark_coord.y << endl;
+  //cout << frame.cols << " " << frame.rows << endl;
+
+  if(current_time % 4 == 1)
+    cv::flip(lightning_spark, lightning_spark, 1);
+  else if(current_time % 4 == 2)
+    cv::transpose(lightning_spark, lightning_spark);
+  else if(current_time % 4 == 3)
+    cv::flip(lightning_spark, lightning_spark, 0);
     
-    roi_spark = frame(cv::Rect(0, 0, lightning_spark.cols, lightning_spark.rows));
-    roi_core = frame(cv::Rect(0, 0, lightning_core.cols, lightning_core.rows));
+  roi_spark = frame(cv::Rect(spark_coord.x, spark_coord.y, xmax - xmin, ymax - ymin));
 
-    cv::addWeighted(roi_spark, 1.0, lightning_spark, 0.3, 0, roi_spark, -1);
-    //cv::addWeighted(roi_core, 1.0, lightning_core, 1, 0, roi_core, -1);
+  cv::addWeighted(roi_spark, 1.0, lightning_spark(cv::Rect(xmin, ymin, xmax - xmin, ymax - ymin)), 0.5, 0, roi_spark, -1);
 
-    current_time ++;
+  current_time ++;
 
-    return 0;
+  if(current_time >= TIME_STOP)
+  {
+    return 1;
+  }
+
+  return 0;
 }
 
-void effect_overlay::add_effect(string current_gesture, cv::Mat frame, int flag_restart)
+int effect_overlay::add_effect(string current_gesture, cv::Mat frame, cv::Point hand_center, int flag_restart)
 {
-    int ret;
-    ret = (this->*seq_map["r60"])(frame, 0);
-    return ;
+  int ret;
+  ret = (this->*seq_map[current_gesture])(frame, hand_center, flag_restart);
+  return ret;
 }
 
 

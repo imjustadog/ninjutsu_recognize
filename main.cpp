@@ -190,6 +190,8 @@ int main(int argc,char *argv[])
   const char *svm_model_path = "./model/";
   svm_inference svm_ninjutsu(svm_model_path);
   effect_overlay effect_ninjutsu;
+  string current_effect = "";
+  int effect_ret;
 
   int input_idx=0;
   int output_idx=0;
@@ -273,7 +275,11 @@ int main(int argc,char *argv[])
       cv::minMaxLoc(probMap, 0, &prob, 0, &maxLoc);
       points[n].x = maxLoc.x * (image_width / output_width) + 4;
       points[n].y = maxLoc.y * (image_height / output_height) + 4;
-    }    
+    }
+
+    cv::Point hand_center;
+    hand_center.x = points[9].x;
+    hand_center.y = points[9].y;
 
     cv::Mat output_image;
 
@@ -296,9 +302,11 @@ int main(int argc,char *argv[])
 
 
     string svm_result;
+    string seq_result;
     vector<double> svm_input;
     double pmax = INT_MIN;
     double pmin = INT_MAX;
+    int effect_ret;
 
     for(int n = 1;n < output_channel - 1; n++)
     {
@@ -319,17 +327,29 @@ int main(int argc,char *argv[])
     svm_ninjutsu.do_svm_preprocess(svm_input);
     svm_result = svm_ninjutsu.do_svm_inference();
     svm_ninjutsu.do_svm_postprocess();
-
-    string seq_result;
     seq_result = effect_ninjutsu.find_seq(svm_result);
-    effect_ninjutsu.add_effect(seq_result, output_image, 0);
+
+    if(seq_result != "")
+    {
+      current_effect = seq_result;
+      effect_ret = effect_ninjutsu.add_effect(current_effect, input_image, hand_center, 1);
+    }
+
+    if(current_effect != "")
+    {
+      effect_ret = effect_ninjutsu.add_effect(current_effect, input_image, hand_center, 0);
+      if(effect_ret)
+        current_effect = "";
+    }
+    
 
     //get time end
     auto t1=GetTickCount();
 
     printf("HardwareTime:%f(ms) E2ETime:%f(ms)\n",hwtime/1000.0,t1-t0);
 
-    cv::imshow("show", output_image);
+    cv::imshow("openpose", output_image);
+    cv::imshow("ninjutsu", input_image);
     ch = cv::waitKey(1);
   }
 
