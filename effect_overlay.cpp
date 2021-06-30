@@ -9,6 +9,10 @@ const int TIME_TRANS = 40;
 const int TIME_MOVE = 60;
 const int TIME_STOP = 100;
 const int FOX_INTERVAL = 30;
+const int WLKC_START1 = 60;
+const int WLKC_START2 = 70;
+const int WLKC_START3 = 80;
+const int WLKC_START4 = 90;
 
 effect_overlay::effect_overlay()
 {
@@ -122,7 +126,7 @@ int effect_overlay::draw_lightning(cv::Mat &frame, cv::Point hand_center, int fl
   }
   else if(spark_coord.x > frame.cols - resized_spark.cols)
   {
-    xmax = resized_spark.cols - (frame.cols - spark_coord.x);
+    xmax = frame.cols - spark_coord.x;
   }
   else if(spark_coord.x > frame.cols)
   {
@@ -137,7 +141,7 @@ int effect_overlay::draw_lightning(cv::Mat &frame, cv::Point hand_center, int fl
   }
   else if(spark_coord.y > frame.rows - resized_spark.rows)
   {
-    ymax = resized_spark.rows - (frame.rows - spark_coord.y);
+    ymax = frame.rows - spark_coord.y;
   }
   else if(spark_coord.y > frame.rows)
   {
@@ -161,6 +165,75 @@ int effect_overlay::draw_lightning(cv::Mat &frame, cv::Point hand_center, int fl
 
   return 0;
 }
+
+
+int effect_overlay::draw_5t5(cv::Mat &frame, cv::Point hand_center, int flag_restart)
+{
+  static int current_time = 0;
+  static cv::Mat wlkc1 = cv::imread("wlkc1.png");
+  static cv::Mat wlkc2 = cv::imread("wlkc2.png");
+  static cv::Mat wlkc3 = cv::imread("wlkc3.png");
+  static cv::Mat wlkc4 = cv::imread("wlkc4.png");
+  static cv::Mat wlkc5 = cv::imread("wlkc5.png");
+  static cv::Mat wlkc6 = cv::imread("wlkc6.png");
+  static cv::Mat wlkc7 = cv::imread("wlkc7.png");
+  static cv::Mat wlkc8 = cv::imread("wlkc8.png");
+
+  if(flag_restart)
+  {
+    current_time = 0;
+  }
+
+  if(current_time < WLKC_START1)
+  {
+    switch(current_time%4)
+    {
+      case 0:
+        cv::addWeighted(frame, 1.0, wlkc1, 0.5, 0, frame, -1);
+        break;
+      case 1:
+        cv::addWeighted(frame, 1.0, wlkc2, 0.5, 0, frame, -1);
+        break;
+      case 2:
+        cv::addWeighted(frame, 1.0, wlkc3, 0.5, 0, frame, -1);
+        break;
+      case 3:
+        cv::addWeighted(frame, 1.0, wlkc4, 0.5, 0, frame, -1);
+        break;
+      default:
+        break;
+    }
+  }
+  else if(current_time < WLKC_START1)
+  {
+    cv::addWeighted(frame, 1.0, wlkc5, 0.8, 0, frame, -1);
+  }
+  else if(current_time < WLKC_START2)
+  {
+    cv::addWeighted(frame, 1.0, wlkc6, 0.8, 0, frame, -1);
+  }
+
+  else if(current_time < WLKC_START3)
+  {
+    cv::addWeighted(frame, 1.0, wlkc7, 0.8, 0, frame, -1);
+  }
+
+  else if(current_time < WLKC_START4)
+  {
+    cv::addWeighted(frame, 1.0, wlkc8, 0.8, 0, frame, -1);
+  }
+
+
+  current_time ++;
+
+  if(current_time >= TIME_STOP)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
 
 int effect_overlay::draw_fox(cv::Mat &frame, cv::Point hand_center, int flag_restart)
 {
@@ -205,7 +278,7 @@ int effect_overlay::draw_fox(cv::Mat &frame, cv::Point hand_center, int flag_res
   }
   else if(fox_coord.x > frame.cols - resized_fox.cols)
   {
-    xmax = resized_fox.cols - (frame.cols - fox_coord.x);
+    xmax = frame.cols - fox_coord.x;
   }
   else if(fox_coord.x > frame.cols)
   {
@@ -219,7 +292,7 @@ int effect_overlay::draw_fox(cv::Mat &frame, cv::Point hand_center, int flag_res
   }
   else if(fox_coord.y > frame.rows - resized_fox.rows)
   {
-    ymax = resized_fox.rows - (frame.rows - fox_coord.y);
+    ymax = frame.rows - fox_coord.y;
   }
   else if(fox_coord.y > frame.rows)
   {

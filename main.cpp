@@ -346,7 +346,10 @@ int main(int argc,char *argv[])
     //get time end
     auto t1=GetTickCount();
 
-    printf("HardwareTime:%f(ms) E2ETime:%f(ms)\n",hwtime/1000.0,t1-t0);
+    printf("HardwareTime:%f(ms) TotalTime:%f(ms)\n",hwtime/1000.0,t1-t0);
+
+    cv::resize(input_image,input_image,cv::Size(640,480),CV_INTER_AREA);		
+    cv::resize(output_image,output_image,cv::Size(480,320),CV_INTER_AREA);		
 
     cv::imshow("openpose", output_image);
     cv::imshow("ninjutsu", input_image);

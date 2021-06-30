@@ -24,8 +24,9 @@ class effect_overlay
     int draw_fox(cv::Mat &frame, cv::Point hand_center, int flag_restart);
     int draw_water(cv::Mat &frame, cv::Point hand_center, int flag_restart);
     int draw_lightning(cv::Mat &frame, cv::Point hand_center, int flag_restart);
+    int draw_5t5(cv::Mat &frame, cv::Point hand_center, int flag_restart);
     string current_seq = "";
-    unordered_map<string, int(effect_overlay::*)(cv::Mat &,cv::Point,int)> seq_map{{"r60", &effect_overlay::draw_lightning}, {"24bgiokr2", &effect_overlay::draw_water}, {"q9qzqn3q", &effect_overlay::draw_fox}, {"w", &effect_overlay::draw_lightning}};
+    unordered_map<string, int(effect_overlay::*)(cv::Mat &,cv::Point,int)> seq_map{{"r60", &effect_overlay::draw_lightning}, {"24bgiokr2", &effect_overlay::draw_water}, {"q9qzqnq3q", &effect_overlay::draw_fox}, {"2w", &effect_overlay::draw_5t5}};
   public:
     effect_overlay();
     ~effect_overlay();
