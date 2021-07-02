@@ -10,9 +10,10 @@ const int TIME_MOVE = 60;
 const int TIME_STOP = 100;
 const int FOX_INTERVAL = 30;
 const int WLKC_START1 = 60;
-const int WLKC_START2 = 70;
-const int WLKC_START3 = 80;
-const int WLKC_START4 = 90;
+const int WLKC_START2 = 90;
+const int WLKC_START3 = 100;
+const int WLKC_START4 = 110;
+const int WLKC_START5 = 120;
 
 effect_overlay::effect_overlay()
 {
@@ -204,32 +205,33 @@ int effect_overlay::draw_5t5(cv::Mat &frame, cv::Point hand_center, int flag_res
         break;
     }
   }
-  else if(current_time < WLKC_START1)
+  else if(current_time < WLKC_START2)
   {
     cv::addWeighted(frame, 1.0, wlkc5, 0.8, 0, frame, -1);
   }
-  else if(current_time < WLKC_START2)
+  else if(current_time < WLKC_START3)
   {
     cv::addWeighted(frame, 1.0, wlkc6, 0.8, 0, frame, -1);
   }
 
-  else if(current_time < WLKC_START3)
+  else if(current_time < WLKC_START4)
   {
     cv::addWeighted(frame, 1.0, wlkc7, 0.8, 0, frame, -1);
   }
 
-  else if(current_time < WLKC_START4)
+  else if(current_time < WLKC_START5)
   {
     cv::addWeighted(frame, 1.0, wlkc8, 0.8, 0, frame, -1);
+  }
+  else
+  {
+    return 1;
   }
 
 
   current_time ++;
 
-  if(current_time >= TIME_STOP)
-  {
-    return 1;
-  }
+
 
   return 0;
 }
